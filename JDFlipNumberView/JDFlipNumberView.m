@@ -39,10 +39,10 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationDirection) {
 
 - (id)init;
 {
-	return [self initWithDigitCount:1];
+	return [self initWithDigitCount:1 bundleName:@"orange"];
 }
 
-- (id)initWithDigitCount:(NSUInteger)digitCount;
+- (id)initWithDigitCount:(NSUInteger)digitCount bundleName:(NSString*)bundleName;
 {
     self = [super initWithFrame:CGRectZero];
     if (self)
@@ -56,7 +56,7 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationDirection) {
 		JDFlipNumberDigitView* view = nil;
 		NSMutableArray* allViews = [[NSMutableArray alloc] initWithCapacity:digitCount];
 		for (int i = 0; i < digitCount; i++) {
-			view = [[JDFlipNumberDigitView alloc] init];
+			view = [[JDFlipNumberDigitView alloc] initWithBundle:bundleName];
 			view.frame = CGRectMake(i*view.frame.size.width, 0, view.frame.size.width, view.frame.size.height);
 			[self addSubview: view];
 			[allViews addObject: view];

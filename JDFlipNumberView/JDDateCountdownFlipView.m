@@ -48,10 +48,10 @@ static CGFloat kFlipAnimationUpdateInterval = 0.5; // = 2 times per second
         self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
 		
         // setup flipviews
-        self.dayFlipNumberView = [[JDFlipNumberView alloc] initWithDigitCount:_dayDigitCount];
-        self.hourFlipNumberView = [[JDFlipNumberView alloc] initWithDigitCount:2];
-        self.minuteFlipNumberView = [[JDFlipNumberView alloc] initWithDigitCount:2];
-        self.secondFlipNumberView = [[JDFlipNumberView alloc] initWithDigitCount:2];
+        self.dayFlipNumberView = [[JDFlipNumberView alloc] initWithDigitCount:_dayDigitCount bundleName:@"orange"];
+        self.hourFlipNumberView = [[JDFlipNumberView alloc] initWithDigitCount:2 bundleName:@"orange"];
+        self.minuteFlipNumberView = [[JDFlipNumberView alloc] initWithDigitCount:2 bundleName:@"orange"];
+        self.secondFlipNumberView = [[JDFlipNumberView alloc] initWithDigitCount:2 bundleName:@"orange"];
         
         self.hourFlipNumberView.maximumValue = 23;
         self.minuteFlipNumberView.maximumValue = 59;

@@ -11,9 +11,7 @@
 static JDFlipNumberViewImageFactory *sharedInstance;
 
 @interface JDFlipNumberViewImageFactory ()
-@property (nonatomic, strong) NSArray *topImages;
-@property (nonatomic, strong) NSArray *bottomImages;
-@property (nonatomic, strong) NSString *imageBundle;
+@property (nonatomic, strong) NSMutableDictionary *numberImages;
 - (void)setup;
 @end
 
@@ -24,7 +22,6 @@ static JDFlipNumberViewImageFactory *sharedInstance;
     if (sharedInstance != nil) {
         return sharedInstance;
     }
-    
     return [[self alloc] init];
 }
 
@@ -39,7 +36,7 @@ static JDFlipNumberViewImageFactory *sharedInstance;
         self = [super init];
         if (self) {
             sharedInstance = self;
-            self.imageBundle = @"JDFlipNumberView";
+            _numberImages = [NSMutableDictionary dictionary];
             [self setup];
         }
         return self;
@@ -49,7 +46,7 @@ static JDFlipNumberViewImageFactory *sharedInstance;
 - (void)setup;
 {
     // create default images
-    [self generateImagesFromBundleNamed:self.imageBundle];
+    [self generateImagesFromBundleNamed:DEFAULT_BUNDLE_NAME];
     
     // register for memory warnings
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -69,44 +66,55 @@ static JDFlipNumberViewImageFactory *sharedInstance;
 #pragma mark -
 #pragma mark getter
 
-- (NSArray *)topImages;
-{
-    @synchronized(self)
-    {
-        if (_topImages.count == 0) {
-            [self generateImagesFromBundleNamed:self.imageBundle];
+- (NSArray *)topImages:(NSString*)bundleName {
+    NSDictionary* numberImages = (NSDictionary*)[_numberImages objectForKey:bundleName];
+    if (numberImages) {
+        NSArray* tempImages = [numberImages objectForKey:TOP_IMAGES_IDENTIFIER];
+        if (tempImages && tempImages.count <= 0) {
+            [self generateImagesFromBundleNamed:bundleName];
         }
-        
-        return _topImages;
+        return tempImages;
+    } else {
+        [self generateImagesFromBundleNamed:bundleName];
+        return [self topImages:bundleName];
     }
+    return [self topImages:DEFAULT_BUNDLE_NAME];
 }
 
-- (NSArray *)bottomImages;
-{
-    @synchronized(self)
-    {
-        if (_bottomImages.count == 0) {
-            [self generateImagesFromBundleNamed:self.imageBundle];
+- (NSArray *)bottomImages:(NSString*)bundleName {
+    NSDictionary* numberImages = (NSDictionary*)[_numberImages objectForKey:bundleName];
+    if (numberImages) {
+        NSArray* tempImages = [numberImages objectForKey:BOTTOM_IMAGES_IDENTIFIER];
+        if (tempImages && tempImages.count <= 0) {
+            [self generateImagesFromBundleNamed:bundleName];
         }
-        
-        return _bottomImages;
+        return tempImages;
+    } else {
+        [self generateImagesFromBundleNamed:bundleName];
+        return [self bottomImages:bundleName];
     }
+    return [self topImages:DEFAULT_BUNDLE_NAME];
 }
 
 - (CGSize)imageSize
 {
-    return ((UIImage*)self.topImages[0]).size;
+    NSDictionary* numberImages = (NSDictionary*)[_numberImages objectForKey:DEFAULT_BUNDLE_NAME];
+    if (numberImages) {
+        NSArray* tempImages = [numberImages objectForKey:TOP_IMAGES_IDENTIFIER];
+        return ((UIImage*)[tempImages objectAtIndex:0]).size;
+    }
+    return CGSizeZero;
 }
 
 #pragma mark -
 #pragma mark image generation
 - (void)generateImagesFromBundleNamed:(NSString*)bundleName;
 {
-    self.imageBundle = bundleName;
     // create image array
 	NSMutableArray* topImages = [NSMutableArray arrayWithCapacity:10];
 	NSMutableArray* bottomImages = [NSMutableArray arrayWithCapacity:10];
-	
+    NSMutableDictionary* numberTempImages = [NSMutableDictionary dictionary];
+    
 	// create bottom and top images
     for (NSInteger j=0; j<10; j++) {
         for (int i=0; i<2; i++) {
@@ -133,10 +141,9 @@ static JDFlipNumberViewImageFactory *sharedInstance;
             }
 		}
 	}
-	
-    // save images
-	self.topImages    = [NSArray arrayWithArray:topImages];
-	self.bottomImages = [NSArray arrayWithArray:bottomImages];
+    [numberTempImages setValue:[NSArray arrayWithArray:topImages] forKey:TOP_IMAGES_IDENTIFIER];
+    [numberTempImages setValue:[NSArray arrayWithArray:bottomImages] forKey:BOTTOM_IMAGES_IDENTIFIER];
+    [_numberImages setValue:[NSDictionary dictionaryWithDictionary:numberTempImages] forKey:bundleName];
 }
 
 #pragma mark -
@@ -145,8 +152,7 @@ static JDFlipNumberViewImageFactory *sharedInstance;
 // clear memory
 - (void)didReceiveMemoryWarning:(NSNotification*)notification;
 {
-    self.topImages = @[];
-    self.bottomImages = @[];
+_numberImages = nil;
 }
 
 @end

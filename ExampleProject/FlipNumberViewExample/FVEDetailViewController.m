@@ -88,12 +88,12 @@ static CGFloat const FVEDetailControllerTargetedViewTag = 111;
     JDFlipNumberView *flipView = nil;
     
     if (self.indexPath.section == 0) {
-        flipView = [[JDFlipNumberView alloc] initWithDigitCount:3];
+        flipView = [[JDFlipNumberView alloc] initWithDigitCount:3 bundleName:@"orange"];
         flipView.value = 32;
         flipView.maximumValue = 128;
         [flipView animateDownWithTimeInterval:0.3];
     } else {
-        flipView = [[JDFlipNumberView alloc] initWithDigitCount:5];
+        flipView = [[JDFlipNumberView alloc] initWithDigitCount:5 bundleName:@"orange"];
         flipView.value = 2300;
         flipView.tag = FVEDetailControllerTargetedViewTag;
         

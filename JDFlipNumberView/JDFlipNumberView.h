@@ -20,7 +20,7 @@ typedef void(^JDFlipAnimationCompletionBlock)(BOOL finished);
 @property (nonatomic, readonly) NSUInteger digitCount;
 
 
-- (id)initWithDigitCount:(NSUInteger)digitCount;
+- (id)initWithDigitCount:(NSUInteger)digitCount bundleName:(NSString*)bundleName;
 
 - (void)setZDistance:(NSUInteger)zDistance;
 

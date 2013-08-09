@@ -32,33 +32,47 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationState) {
 @property (nonatomic, assign) JDFlipAnimationType animationType;
 @property (nonatomic, assign) NSUInteger previousValue;
 @property (nonatomic, copy) JDDigitAnimationCompletionBlock completionBlock;
-- (void)commonInit;
+- (void)commonInit:(NSString*)bundleName;
 - (void)initImagesAndFrames;
 - (void)updateFlipViewFrame;
 - (void)updateImagesAnimated:(BOOL)animated;
 - (void)runAnimation;
 @end
 
-
 @implementation JDFlipNumberDigitView
 
-- (id)initWithFrame:(CGRect)frame;
+- (id) initWithBundle:(NSString *)bundleName {
+    self = [super init];
+    if (self) {
+        self.bundleName = bundleName;
+        [self commonInit:bundleName];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame bundleName:(NSString *)bundleName
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self commonInit];
+        [self commonInit:bundleName];
     }
     return self;
 }
 
 - (void)awakeFromNib;
 {
-    [self commonInit];
+    [self commonInit:self.bundleName];
 }
 
-- (void)commonInit;
+- (void)commonInit:(NSString*)bundleName;
 {
+    NSString* tempBundleName = DEFAULT_BUNDLE_NAME;
+    if (bundleName && ![bundleName isEqualToString:@""]) {
+        tempBundleName = bundleName;
+    }
+    
     // setup view
+    self.bundleName = tempBundleName;
     self.backgroundColor = [UIColor clearColor];
     self.autoresizesSubviews = NO;
     self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
@@ -72,15 +86,16 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationState) {
     [self initImagesAndFrames];
 }
 
-- (void)initImagesAndFrames;
+- (void)initImagesAndFrames
 {
 	// setup image views
-	self.topImageView	 = [[UIImageView alloc] initWithImage: JD_IMG_FACTORY.topImages[0]];
-	self.flipImageView	 = [[UIImageView alloc] initWithImage: JD_IMG_FACTORY.topImages[0]];
-	self.bottomImageView = [[UIImageView alloc] initWithImage: JD_IMG_FACTORY.bottomImages[0]];
+    self.topImageView = [[UIImageView alloc] initWithImage:[[JD_IMG_FACTORY topImages:self.bundleName] objectAtIndex:0]];
+    self.flipImageView = [[UIImageView alloc] initWithImage:[[JD_IMG_FACTORY topImages:self.bundleName] objectAtIndex:0]];
+    self.bottomImageView = [[UIImageView alloc] initWithImage:[[JD_IMG_FACTORY bottomImages:self.bundleName] objectAtIndex:0]];
+
     self.flipImageView.hidden = YES;
 	
-	self.bottomImageView.frame = CGRectMake(0, JD_IMG_FACTORY.imageSize.height,
+    self.bottomImageView.frame = CGRectMake(0, JD_IMG_FACTORY.imageSize.height,
                                             JD_IMG_FACTORY.imageSize.width,
                                             JD_IMG_FACTORY.imageSize.height);
 	
@@ -187,9 +202,16 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationState) {
 {
     if (!animated || self.animationDuration < kFlipAnimationMinimumAnimationDuration) {
         // show new value
-        self.topImageView.image	   = JD_IMG_FACTORY.topImages[self.value];
-        self.flipImageView.image   = JD_IMG_FACTORY.topImages[self.value];
-        self.bottomImageView.image = JD_IMG_FACTORY.bottomImages[self.value];
+
+        // self.topImageView.image	   = JD_IMG_FACTORY.topImages[self.value];
+        
+        self.topImageView.image = [[JD_IMG_FACTORY topImages:self.bundleName] objectAtIndex:self.value];
+        
+        // self.flipImageView.image   = JD_IMG_FACTORY.topImages[self.value];
+        self.flipImageView.image = [[JD_IMG_FACTORY topImages:self.bundleName] objectAtIndex:self.value];
+        
+        // self.bottomImageView.image = JD_IMG_FACTORY.bottomImages[self.value];
+        self.bottomImageView.image = [[JD_IMG_FACTORY bottomImages:self.bundleName] objectAtIndex:self.value];
         
         // reset state
         self.flipImageView.hidden = YES;
@@ -224,19 +246,27 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationState) {
         [self.flipImageView.layer removeAllAnimations];
         
 		// setup first animation half
-        self.topImageView.image	   = JD_IMG_FACTORY.topImages[isTopDown ? self.value : self.previousValue];
-        self.flipImageView.image   = isTopDown ? JD_IMG_FACTORY.topImages[self.previousValue] : JD_IMG_FACTORY.bottomImages[self.previousValue];
-        self.bottomImageView.image = JD_IMG_FACTORY.bottomImages[isTopDown ? self.previousValue : self.value];
-		
+        
+        // self.topImageView.image	   = JD_IMG_FACTORY.topImages[isTopDown ? self.value : self.previousValue];
+        self.topImageView.image = [[[JD_IMG_FACTORY.numberImages objectForKey:self.bundleName] objectForKey:TOP_IMAGES_IDENTIFIER] objectAtIndex:(isTopDown ? self.value : self.previousValue)];
+        
+        // self.flipImageView.image   = isTopDown ? JD_IMG_FACTORY.topImages[self.previousValue] : JD_IMG_FACTORY.bottomImages[self.previousValue];
+        self.flipImageView.image = isTopDown ? [[[JD_IMG_FACTORY.numberImages objectForKey:self.bundleName] objectForKey:TOP_IMAGES_IDENTIFIER] objectAtIndex:self.previousValue] : [[[JD_IMG_FACTORY.numberImages objectForKey:self.bundleName] objectForKey:BOTTOM_IMAGES_IDENTIFIER] objectAtIndex:self.previousValue];
+        
+        // self.bottomImageView.image = JD_IMG_FACTORY.bottomImages[isTopDown ? self.previousValue : self.value];
+		self.bottomImageView.image = [[[JD_IMG_FACTORY.numberImages objectForKey:self.bundleName] objectForKey:BOTTOM_IMAGES_IDENTIFIER] objectAtIndex:(isTopDown ? self.previousValue : self.value)];
+        
         animation.fromValue	= [NSValue valueWithCATransform3D:CATransform3DMakeRotation(0.0, 1, 0, 0)];
         animation.toValue   = [NSValue valueWithCATransform3D:CATransform3DMakeRotation(isTopDown ? -M_PI_2 : M_PI_2, 1, 0, 0)];
 		animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
 	} else {
 		// setup second animation half
         if (isTopDown) {
-            self.flipImageView.image = JD_IMG_FACTORY.bottomImages[self.value];
+            // self.flipImageView.image = JD_IMG_FACTORY.bottomImages[self.value];
+            self.flipImageView.image = [[[JD_IMG_FACTORY.numberImages objectForKey:self.bundleName] objectForKey:BOTTOM_IMAGES_IDENTIFIER] objectAtIndex:self.value];
         } else {
-            self.flipImageView.image = JD_IMG_FACTORY.topImages[self.value];
+            // self.flipImageView.image = JD_IMG_FACTORY.topImages[self.value];
+            self.flipImageView.image = [[[JD_IMG_FACTORY.numberImages objectForKey:self.bundleName] objectForKey:TOP_IMAGES_IDENTIFIER] objectAtIndex:self.value];
         }
         
 		animation.fromValue	= [NSValue valueWithCATransform3D:CATransform3DMakeRotation(isTopDown ? M_PI_2 : -M_PI_2, 1, 0, 0)];
@@ -271,9 +301,11 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationState) {
 		
 		// update images
         if(self.animationType == JDFlipAnimationTypeTopDown) {
-            self.bottomImageView.image = JD_IMG_FACTORY.bottomImages[self.value];
+            // self.bottomImageView.image = JD_IMG_FACTORY.bottomImages[self.value];
+            self.bottomImageView.image = [[[JD_IMG_FACTORY.numberImages objectForKey:self.bundleName] objectForKey:BOTTOM_IMAGES_IDENTIFIER] objectAtIndex:self.value];
         } else {
-            self.topImageView.image = JD_IMG_FACTORY.topImages[self.value];
+            // self.topImageView.image = JD_IMG_FACTORY.topImages[self.value];
+            self.topImageView.image = [[[JD_IMG_FACTORY.numberImages objectForKey:self.bundleName] objectForKey:TOP_IMAGES_IDENTIFIER] objectAtIndex:self.value];
         }
         self.flipImageView.hidden  = YES;
 		

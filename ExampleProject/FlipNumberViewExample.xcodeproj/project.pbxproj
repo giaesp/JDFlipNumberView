@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		610D0D6217B4DCE500F3D3D5 /* orange.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 610D0D6117B4DCE500F3D3D5 /* orange.bundle */; };
 		D209810516701F77002EF55F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D209810416701F77002EF55F /* Default-568h@2x.png */; };
 		D25D53CB15D1B3D200B791F3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D25D53CA15D1B3D200B791F3 /* UIKit.framework */; };
 		D25D53CD15D1B3D200B791F3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D25D53CC15D1B3D200B791F3 /* Foundation.framework */; };
@@ -33,6 +34,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		610D0D6117B4DCE500F3D3D5 /* orange.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = orange.bundle; sourceTree = "<group>"; };
 		D209810416701F77002EF55F /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		D25D53C615D1B3D200B791F3 /* FlipNumberViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipNumberViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D25D53CA15D1B3D200B791F3 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -141,6 +143,7 @@
 				D2FDCA2B167E4CD5008FC0A6 /* JDFlipNumberView.m */,
 				D25D53F615D1B97F00B791F3 /* JDDateCountdownFlipView.h */,
 				D25D53F715D1B97F00B791F3 /* JDDateCountdownFlipView.m */,
+				610D0D6117B4DCE500F3D3D5 /* orange.bundle */,
 				D25D540715D1BD5C00B791F3 /* JDFlipNumberView.bundle */,
 			);
 			name = JDFlipNumberView;
@@ -251,6 +254,7 @@
 				D2FE288A16FDFFA400D54A1E /* Icon-Small-50@2x.png in Resources */,
 				D2FE288B16FDFFA400D54A1E /* Icon-Small.png in Resources */,
 				D2FE288C16FDFFA400D54A1E /* Icon-Small@2x.png in Resources */,
+				610D0D6217B4DCE500F3D3D5 /* orange.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
